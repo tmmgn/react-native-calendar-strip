@@ -596,6 +596,34 @@ class CalendarStrip extends Component {
         datesForWeek={this.state.datesForWeek}
         fontSize={this.state.monthFontSize}
         allowHeaderTextScaling={this.props.shouldAllowFontScaling}
+        weekSelectorPrev={<WeekSelector
+              controlDate={this.props.minDate}
+              iconComponent={this.props.leftSelector}
+              iconContainerStyle={this.props.iconContainer}
+              iconInstanceStyle={this.props.iconLeftStyle}
+              iconStyle={this.props.iconStyle}
+              imageSource={this.props.iconLeft}
+              onPress={this.getPreviousWeek}
+              weekEndDate={
+                this.state.datesForWeek[this.state.datesForWeek.length - 1]
+              }
+              weekStartDate={this.state.datesForWeek[0]}
+              size={this.state.selectorSize}
+            />}
+        weekSelectorNext={<WeekSelector
+              controlDate={this.props.maxDate}
+              iconComponent={this.props.rightSelector}
+              iconContainerStyle={this.props.iconContainer}
+              iconInstanceStyle={this.props.iconRightStyle}
+              iconStyle={this.props.iconStyle}
+              imageSource={this.props.iconRight}
+              onPress={this.getNextWeek}
+              weekEndDate={
+                this.state.datesForWeek[this.state.datesForWeek.length - 1]
+              }
+              weekStartDate={this.state.datesForWeek[0]}
+              size={this.state.selectorSize}
+            />}
       />
     );
 
@@ -616,41 +644,11 @@ class CalendarStrip extends Component {
           {this.props.showDate && this.props.calendarHeaderPosition === 'above' && calendarHeader}
 
           <View style={styles.datesStrip}>
-            <WeekSelector
-              controlDate={this.props.minDate}
-              iconComponent={this.props.leftSelector}
-              iconContainerStyle={this.props.iconContainer}
-              iconInstanceStyle={this.props.iconLeftStyle}
-              iconStyle={this.props.iconStyle}
-              imageSource={this.props.iconLeft}
-              onPress={this.getPreviousWeek}
-              weekEndDate={
-                this.state.datesForWeek[this.state.datesForWeek.length - 1]
-              }
-              weekStartDate={this.state.datesForWeek[0]}
-              size={this.state.selectorSize}
-            />
-
             {this.props.showDate ? (
               <View style={styles.calendarDates}>{datesRender}</View>
             ) : (
               calendarHeader
             )}
-
-            <WeekSelector
-              controlDate={this.props.maxDate}
-              iconComponent={this.props.rightSelector}
-              iconContainerStyle={this.props.iconContainer}
-              iconInstanceStyle={this.props.iconRightStyle}
-              iconStyle={this.props.iconStyle}
-              imageSource={this.props.iconRight}
-              onPress={this.getNextWeek}
-              weekEndDate={
-                this.state.datesForWeek[this.state.datesForWeek.length - 1]
-              }
-              weekStartDate={this.state.datesForWeek[0]}
-              size={this.state.selectorSize}
-            />
           </View>
 
           {this.props.showDate && this.props.calendarHeaderPosition === 'below' && calendarHeader}
