@@ -70,6 +70,7 @@ class CalendarHeader extends Component {
     );
     return (
       <View style={this.props.calendarHeaderContainerStyle}>
+      {this.props.weekSelectorPrev}
         <Text
           style={[
             styles.calendarHeader,
@@ -80,6 +81,7 @@ class CalendarHeader extends Component {
         >
           {headerText}
         </Text>
+      {this.props.weekSelectorNext}
       </View>
     );
   }
