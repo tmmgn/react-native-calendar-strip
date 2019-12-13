@@ -20,7 +20,7 @@ class CalendarHeader extends Component {
   };
 
   shouldComponentUpdate(nextProps) {
-    return JSON.stringify(this.props) !== JSON.stringify(nextProps);
+    return this.props !== nextProps;
   }
 
   //Function that formats the calendar header
