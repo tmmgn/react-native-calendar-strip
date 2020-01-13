@@ -223,7 +223,6 @@ class CalendarDay extends Component {
       width: this.state.containerSize,
       height: this.state.containerSize,
       borderRadius: this.state.containerBorderRadius,
-      padding: this.state.containerPadding
     };
 
 
