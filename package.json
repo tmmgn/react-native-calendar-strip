@@ -19,24 +19,25 @@
   "bugs": {
     "url": "https://github.com/BugiDev/react-native-calendar-strip/issues"
   },
-  "version": "1.3.9",
+  "version": "2.0.9",
   "main": "index.js",
   "directories": {
     "example": "example"
   },
   "scripts": {
-    "eslint": "eslint src/** __tests__/**; exit 0",
-    "format": "prettier-standard \"{src,__tests__}/**/*.js\"",
-    "test": "npm run format && jest",
+    "eslint": "eslint src/**/*.js __tests__/**/*.js --fix",
+    "test": "npm run eslint && jest",
     "test:coverage": "jest --coverage",
     "test:watch": "jest --watch",
     "contributors:add": "./node_modules/.bin/all-contributors add",
-    "contributors:generate": "./node_modules/.bin/all-contributors generate"
+    "contributors:generate": "./node_modules/.bin/all-contributors generate",
+    "postinstall": "node-git-hooks"
   },
   "dependencies": {
-    "moment": "^2.17.1",
+    "moment": ">=2.0.0",
+    "node-git-hooks": "^1.0.1",
     "prop-types": "^15.6.0",
-    "react-lifecycles-compat": "^2.0.0"
+    "recyclerlistview": "^3.0.0"
   },
   "peerDependencies": {
     "react": "*",
@@ -48,15 +49,16 @@
     "babel-jest": "^22.0.3",
     "babel-preset-react-native": "^4.0.0",
     "enzyme": "^3.2.0",
+    "enzyme-adapter-react-16": "^1.15.2",
     "enzyme-to-json": "^3.3.0",
     "eslint": "^4.13.1",
     "eslint-plugin-import": "^2.7.0",
     "eslint-plugin-react": "^7.5.1",
     "jest": "^22.0.3",
-    "prettier-standard": "^8.0.0",
+    "react": "^16.13.1",
     "react-addons-test-utils": "^15.6.2",
     "react-dom": "^16.2.0",
-    "react-native": "^0.51.0",
+    "react-native": "^0.62.0",
     "react-test-renderer": "^16.2.0"
   },
   "keywords": [
@@ -83,6 +85,11 @@
       "src/**/*.js",
       "!src/img.js",
       "!example/*.js"
+    ],
+    "modulePathIgnorePatterns": [
+      "example",
+      "npm-cache",
+      ".npm"
     ],
     "collectCoverage": false,
     "globals": {

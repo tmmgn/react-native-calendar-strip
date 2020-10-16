@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Text, View } from "react-native";
+import { Text, TouchableOpacity } from "react-native";
 
 import styles from "./Calendar.style.js";
 
@@ -15,8 +15,12 @@ class CalendarHeader extends Component {
       PropTypes.object,
       PropTypes.number
     ]),
-    datesForWeek: PropTypes.array.isRequired,
-    allowHeaderTextScaling: PropTypes.bool
+    weekStartDate: PropTypes.object,
+    weekEndDate: PropTypes.object,
+    allowHeaderTextScaling: PropTypes.bool,
+    fontSize: PropTypes.number,
+    headerText: PropTypes.string,
+    onHeaderSelected: PropTypes.func,
   };
 
   shouldComponentUpdate(nextProps) {
@@ -25,13 +29,13 @@ class CalendarHeader extends Component {
 
   //Function that formats the calendar header
   //It also formats the month section if the week is in between months
-  formatCalendarHeader(datesForWeek, calendarHeaderFormat) {
-    if (!datesForWeek || datesForWeek.length === 0) {
+  formatCalendarHeader(calendarHeaderFormat) {
+    if (!this.props.weekStartDate || !this.props.weekEndDate) {
       return "";
     }
 
-    let firstDay = datesForWeek[0];
-    let lastDay = datesForWeek[datesForWeek.length - 1];
+    const firstDay = this.props.weekStartDate;
+    const lastDay = this.props.weekEndDate;
     let monthFormatting = "";
     //Parsing the month part of the user defined formating
     if ((calendarHeaderFormat.match(/Mo/g) || []).length > 0) {
@@ -64,25 +68,43 @@ class CalendarHeader extends Component {
   }
 
   render() {
-    const headerText = this.formatCalendarHeader(
-      this.props.datesForWeek,
-      this.props.calendarHeaderFormat
-    );
+    const {
+      calendarHeaderFormat,
+      onHeaderSelected,
+      calendarHeaderContainerStyle,
+      calendarHeaderStyle,
+      fontSize,
+      allowHeaderTextScaling,
+      weekStartDate: _weekStartDate,
+      weekEndDate: _weekEndDate,
+      headerText,
+      calendarHeaderContainerStyle,
+      weekSelectorPrev,
+      weekSelectorNext,
+    } = this.props;
+    const _headerText = headerText || this.formatCalendarHeader(calendarHeaderFormat);
+    const weekStartDate = _weekStartDate && _weekStartDate.clone();
+    const weekEndDate = _weekEndDate && _weekEndDate.clone();
+
     return (
-      <View style={this.props.calendarHeaderContainerStyle}>
-      {this.props.weekSelectorPrev}
+      <TouchableOpacity
+        onPress={onHeaderSelected && onHeaderSelected.bind(this, {weekStartDate, weekEndDate})}
+        disabled={!onHeaderSelected}
+        style={[calendarHeaderContainerStyle, calendarHeaderContainerStyle]}
+      >
+       {weekSelectorPrev}
         <Text
           style={[
             styles.calendarHeader,
-            { fontSize: this.props.fontSize },
-            this.props.calendarHeaderStyle
+            { fontSize: fontSize },
+            calendarHeaderStyle
           ]}
-          allowFontScaling={this.props.allowHeaderTextScaling}
+          allowFontScaling={allowHeaderTextScaling}
         >
-          {headerText}
+          {_headerText}
         </Text>
-      {this.props.weekSelectorNext}
-      </View>
+        {weekSelectorNext}
+      </TouchableOpacity>
     );
   }
 }

@@ -13,9 +13,6 @@
   <a href="https://github.com/feross/standard">
     <img src="https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square" alt="standard JS linter" />
   </a>
-  <a href="https://github.com/prettier/prettier">
-    <img src="https://img.shields.io/badge/styled_with-prettier-ff69b4.svg?style=flat-square" alt="prettier code formatting" />
-  </a>
   <a href="https://github.com/BugiDev/react-native-calendar-strip/blob/master/LICENSE.md">
     <img src="https://img.shields.io/npm/l/react-native-calendar-strip.svg?style=flat-square" alt="project license" />
   </a>
@@ -42,8 +39,6 @@
 </div>
 
 <h2>Table of Contents</h2>
-<details>
-  <summary>Table of Contents</summary>
   <li><a href="#install">Install</a></li>
   <li><a href="#usage">Usage</a></li>
   <li><a href="#props">Props</a></li>
@@ -51,7 +46,6 @@
   <li><a href="#localization">Localization</a></li>
   <li><a href="#contributors">Contribute</a></li>
   <li><a href="#license">License</a></li>
-</details>
 
 ## Install
 
@@ -63,9 +57,50 @@ $ yarn add react-native-calendar-strip
 
 ## Usage
 
+### Scrollable CalendarStrip — New in 2.x
+
+The `scrollable` prop was introduced in 2.0.0 and features a bi-directional infinite scroller.  It recycles days using RecyclerListView, shifting the dates as the ends are reached.  The Chrome debugger can cause issues with this updating due to a [RN setTimeout bug](https://github.com/facebook/react-native/issues/4470). To prevent date shifts at the ends of the scroller, set the `minDate` and `maxDate` range to a year or less.
+
+The refactor to support `scrollable` introduced internal changes to the `CalendarDay` component.  Users of the `dayComponent` prop may need to adjust their custom day component to accomomdate the props passed to it.
+
+<div align="center">
+  <img src="https://user-images.githubusercontent.com/6295083/82712731-54a98780-9c4e-11ea-9076-eddf0b756239.gif" alt="">
+</div>
+
+<details>
+
+```jsx
+import { View, StyleSheet } from 'react-native';
+import CalendarStrip from 'react-native-calendar-strip';
+
+const Example = () => (
+  <View style={styles.container}>
+    <CalendarStrip
+      scrollable
+      style={{height:200, paddingTop: 20, paddingBottom: 10}}
+      calendarColor={'#3343CE'}
+      calendarHeaderStyle={{color: 'white'}}
+      dateNumberStyle={{color: 'white'}}
+      dateNameStyle={{color: 'white'}}
+      iconContainer={{flex: 0.1}}
+    />
+  </View>
+);
+
+const styles = StyleSheet.create({
+  container: { flex: 1 }
+});
+```
+
+</details>
+
+
 ### Simple "out of the box" Example
 
 You can use this component without any styling or customization. Just import it in your project and render it:
+<div align="center">
+  <img src="https://user-images.githubusercontent.com/6295083/81627792-9459af00-93c4-11ea-870c-601390912615.gif" alt="">
+</div>
 
 <details>
 
@@ -86,19 +121,17 @@ const styles = StyleSheet.create({
 });
 ```
 
-This will result in:
-
-<div align="center">
-  <img src="https://raw.githubusercontent.com/BugiDev/react-native-calendar-strip/master/example/gifs/blank.gif" alt="">
-</div>
-
 </details>
 
 ### Styling and animations Example
 
-<details>
-
 Even though this component works withouth any customization, it is possible to customize almost everything, so you can make it as beautiful as you want:
+
+<div align="center">
+  <img src="https://user-images.githubusercontent.com/6295083/81627795-958adc00-93c4-11ea-9307-878e9f023cfd.gif" alt="">
+</div>
+
+<details>
 
 ```jsx
 import React, {Component} from 'react';
@@ -146,75 +179,123 @@ class Example extends Component {
 AppRegistry.registerComponent('Example', () => Example);
 ```
 
-This will result in:
-
-<div align="center">
-  <img src="https://raw.githubusercontent.com/BugiDev/react-native-calendar-strip/master/example/gifs/Initial.gif" alt="">
-</div>
-
 </details>
 
 ## Props
 
-### Methods
-
-Methods may be accessed through the instantiated component's [ref](https://reactjs.org/docs/react-component.html).
-
-| Prop                                  | Description                                                                                                                                                                                                                                                                                           |
-| ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`getSelectedDate()`**               | Returns the currently selected date. If no date is selected, returns undefined.                                                                                                                                                                                                                       |
-| **`setSelectedDate(date)`**           | Sets the selected date. `date` may be a Moment object, ISO8601 date string, or any format that Moment is able to parse. It is the responsibility of the caller to select a date that makes sense (e.g. within the current week view). Passing in a value of `0` effectively clears the selected date. |
-| **`getNextWeek()`**                   | Advance to the next week.                                                                                                                                                                                                                                                                             |
-| **`getPreviousWeek()`**               | Rewind to the previous week.                                                                                                                                                                                                                                                                          |
-| **`updateWeekView(date, startDate)`** | Show the week that includes the `date` param. If `startDate` is provided, the first day of the week resets to it as long as `useIsoWeekday` is false.                                                                                                                                                 |
-
 ### Initial data and onDateSelected handler
 
-| Prop                 | Description                                                                                                                                                                                  | Type     | Default    |
-| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ---------- |
-| **`startingDate`**   | Date to be used for centering the calendar/showing the week based on that date. It is internaly wrapped by `moment` so it accepts both `Date` and `moment Date`.                             | Any      |
-| **`selectedDate`**   | Date to be used as pre selected Date. It is internaly wrapped by `moment` so it accepts both `Date` and `moment Date`.                                                                       | Any      |
-| **`onDateSelected`** | Function to be used as a callback when a date is selected. It returns `moment Date`                                                                                                          | Function |
-| **`onWeekChanged`**  | Function to be used as a callback when a week is changed. It returns `moment Date`                                                                                                           | Number   |
-| **`updateWeek`**     | Update the week view if other props change. If `false`, the week view won't change when other props change, but will still respond to left/right selectors.                                  | Bool     | **`True`** |
-| **`useIsoWeekday`**  | start week on ISO day of week (default true). If false, starts week on _startingDate_ parameter.                                                                                             | Bool     | **`True`** |
-| **`minDate`**        | minimum date that the calendar may navigate to. A week is allowed if minDate falls within the current week.                                                                                  | Any      |
-| **`maxDate`**        | maximum date that the calendar may navigate to. A week is allowed if maxDate falls within the current week.                                                                                  | Any      |
-| **`datesWhitelist`** | Dates that are enabled (accepts both `Date` and `moment Date`). Ranges may be specified with an object entry in the array. Check example <a href="#dateswhitelist-array-example"> Below </a> | Array    |
-| **`datesBlacklist`** | Dates that are disabled. Same format as _datesWhitelist_. This overrides dates in _datesWhitelist_.                                                                                          | Array    |
-| **`markedDates`** | Dates that are marked. Format as _markedDatesFormat_.  | Array   | **null**
+| Prop                 | Description                                                                                                                                                        | Type     | Default    |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- | ---------- |
+| **`numDaysInWeek`**  | Number of days shown in week. Applicable only when scrollable is false.                                                                                            | Number   | **`7`**    |
+| **`scrollable`**     | Dates are scrollable if true.                                                                                                                                      | Bool     | **`False`**|
+| **`startingDate`**   | Date to be used for centering the calendar/showing the week based on that date. It is internally wrapped by `moment` so it accepts both `Date` and `moment Date`.  | Any      |
+| **`selectedDate`**   | Date to be used as pre selected Date. It is internally wrapped by `moment` so it accepts both `Date` and `moment Date`.                                            | Any      |
+| **`onDateSelected`** | Function to be used as a callback when a date is selected. Receives param `date` Moment date.                                                                      | Function |
+| **`onWeekChanged`**  | Function to be used as a callback when a week is changed. Receives params `(start, end)` Moment dates.                                                     | Function |
+| **`onHeaderSelected`**| Function to be used as a callback when the header is selected. Receives param object `{weekStartDate, weekEndDate}` Moment dates.                                 | Function |
+| **`headerText`**     | Text to use in the header. Use with `onWeekChanged` to receive the visible start & end dates.                                                                      | String  |
+| **`updateWeek`**     | Update the week view if other props change. If `false`, the week view won't change when other props change, but will still respond to left/right selectors.        | Bool     | **`True`** |
+| **`useIsoWeekday`**  | start week on ISO day of week (default true). If false, starts week on _startingDate_ parameter.                                                                   | Bool     | **`True`** |
+| **`minDate`**        | minimum date that the calendar may navigate to. A week is allowed if minDate falls within the current week.                                                        | Any      |
+| **`maxDate`**        | maximum date that the calendar may navigate to. A week is allowed if maxDate falls within the current week.                                                        | Any      |
+| **`datesWhitelist`** | Array of dates that are enabled, or a function callback which receives a date param and returns true if enabled. Array supports ranges specified with an object entry in the array. Check example <a href="#dateswhitelist-array-example">Below</a> | Array or Func |
+| **`datesBlacklist`** | Array of dates that are disabled, or a function callback. Same format as _datesWhitelist_. This overrides dates in _datesWhitelist_.                               | Array or Func |
+| **`markedDates`**    | Dates that are marked with dots or lines. Format as <a href="#markeddates-example">markedDatesFormat</a>.                                                          | Array or Func | **[]**
+
 
 ##### datesWhitelist Array Example
 
 ```jsx
-   // Date range format
-  {
-      start: (Date or moment Date)
+  datesWhitelist = [
+    // single date (today)
+    moment(),
+
+    // date range
+    {
+      start: (Date or moment Date),
       end: (Date or moment Date)
-  }
+    }
+  ];
+
+  return (
+    <CalendarStrip
+      datesWhitelist={datesWhitelist}
+    />
+  );
 ```
 
-##### markedDatesFormat Array Example
+##### datesBlacklist Callback Example
 
 ```jsx
-   // Market dates format
-  [
-    {
-        date: '(string, Date or Moment object)',
-        dots: [
-            {
-              key: (unique number or string),
-              color: string,
-              selectedDotColor: string,
-            },
-        ],
-    },
-  ]
+  const datesBlacklistFunc = date => {
+    return date.isoWeekday() === 6; // disable Saturdays
+  }
+
+  return (
+    <CalendarStrip
+      datesBlacklist={datesBlacklistFunc}
+    />
+  );
 ```
 
-### markedDates screenshot example
+##### markedDates Example
+<div align="center">
+  <img src="https://user-images.githubusercontent.com/6295083/83835989-e1752c00-a6b7-11ea-9104-c79a26438c50.png" alt="marked dates example">
+</div>
 
-![alt text](https://user-images.githubusercontent.com/6241354/50537547-f1f3af80-0b71-11e9-806d-2ca3294f8b2e.png "react-native-calendar-strip marked dates example")
+`markedDates` may be an array of dates with dots/lines, or a callback that returns the same shaped object for a date passed to it.
+
+```jsx
+  // Marked dates array format
+  markedDatesArray = [
+    {
+      date: '(string, Date or Moment object)',
+      dots: [
+        {
+          color: <string>,
+          selectedColor: <string> (optional),
+        },
+      ],
+    },
+    {
+      date: '(string, Date or Moment object)',
+      lines: [
+        {
+          color: <string>,
+          selectedColor: <string> (optional),
+        },
+      ],
+    },
+  ];
+
+```
+
+```jsx
+  // Marked dates callback
+  markedDatesFunc = date => {
+    // Dot
+    if (date.isoWeekday() === 4) { // Thursdays
+      return {
+        dots:[{
+          color: <string>,
+          selectedColor: <string> (optional),
+        }]
+      };
+    }
+    // Line
+    if (date.isoWeekday() === 6) { // Saturdays
+      return {
+        lines:[{
+          color: <string>,
+          selectedColor: <string> (optional),
+        }]
+      };
+    }
+    return {};
+  }
+
+```
 
 ### Hiding Components
 
@@ -230,11 +311,11 @@ Methods may be accessed through the instantiated component's [ref](https://react
 | Prop                           | Description                                                                                                                                                                                                                                                                              | Type   | Default    |
 | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ---------- |
 | **`style`**                    | Style for the top level CalendarStrip component.                                                                                                                                                                                                                                         | Any    |
-| **`innerStyle`**               | Sh Style for the responsively sized inner view. This is necessary to account for padding/margin from the top level view. The inner view has style `flex:1` by default. If this component is nested within another dynamically sized container, remove the flex style by passing in `[]`. | Any    |
+| **`innerStyle`**               | Style for the responsively sized inner view. This is necessary to account for padding/margin from the top level view. The inner view has style `flex:1` by default. If this component is nested within another dynamically sized container, remove the flex style by passing in `[]`. | Any    |
 | **`calendarHeaderStyle`**      | Style for the header text of the calendar                                                                                                                                   
 | **`calendarHeaderContainerStyle`** | Style for the header text wrapper of the calendar                                                                                                                                                                                                                                        | Any            |
 | **`calendarHeaderPosition`**       | Position of the header text (above or below)                                                                                                                                                                                                                                             | `above, below` | **`above`** |                                                                                                             | Any    |
-| **`calendarHeaderFormat`**     | Format for the header text of the calendar. For options, refere to [moments documentation](http://momentjs.com/docs/#/displaying/format/)                                                                                                                                                | String |
+| **`calendarHeaderFormat`**     | Format for the header text of the calendar. For options, refer to [Moment documentation](http://momentjs.com/docs/#/displaying/format/)                                                                                                                                                | String |
 | **`dateNameStyle`**            | Style for the name of the day on work days in dates strip                                                                                                                                                                                                                                | Any    |
 | **`dateNumberStyle`**          | Style for the number of the day on work days in dates strip.                                                                                                                                                                                                                             | Any    |
 | **`weekendDateNameStyle`**     | Style for the name of the day on weekend days in dates strip.                                                                                                                                                                                                                            | Any    |
@@ -246,52 +327,26 @@ Methods may be accessed through the instantiated component's [ref](https://react
 | **`disabledDateNumberStyle`**  | Style for disabled number of the day in dates strip (controlled by datesWhitelist & datesBlacklist).                                                                                                                                                                                     | Any    |
 | **`markedDatesStyle`**         | Style for the marked dates marker.                                                                                                                                                                                                                                                       | Object |
 | **`disabledDateOpacity`**      | Opacity of disabled dates strip.                                                                                                                                                                                                                                                         | Number | **`0.3`**  |
-| **`customDatesStyles`**        | Custom per-date styling, overriding the styles above. Check Table <a href="#customdatesstyles"> Below </a>                                                                                                                                                                               | Array  |
+| **`customDatesStyles`**        | Custom per-date styling, overriding the styles above. Check Table <a href="#customdatesstyles"> Below </a>     .                                                                                                                                                                           | Array or Func  | [] |
 | **`shouldAllowFontScaling`**   | Override the underlying Text element scaling to respect font settings                                                                                                                                                                            | Bool   | **`True`**|
-
-#### Responsive Sizing
-
-| Prop                         | Description                                                                                                                                          | Type   | Default  |
-| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | -------- |
-| **`maxDayComponentSize`**    | Maximum size that CalendarDay will responsively size up to.                                                                                          | Number | **`80`** |
-| **`minDayComponentSize`**    | Minimum size that CalendarDay will responsively size down to.                                                                                        | Number | **`10`** |
-| **`responsiveSizingOffset`** | Adjust the responsive sizing. May be positive (increase size) or negative (decrease size). This value is added to the calculated day component width | Number | **`0`**  |
-
-#### Icon Sizing
-
-| Prop                 | Description                                                                                                                                                                             | Type | Default |
-| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | ------- |
-| **`iconLeft`**       | Icon to be used for the left icon. It accepts require statement with url to the image (`require('./img/icon.png')`), or object with remote uri `{uri: 'http://example.com/image.png'}`  | Any  |
-| **`iconRight`**      | Icon to be used for the right icon. It accepts require statement with url to the image (`require('./img/icon.png')`), or object with remote uri `{uri: 'http://example.com/image.png'}` | Any  |
-| **`iconStyle`**      | Style that is applied to both left and right icons. It is applied before _iconLeftStyle_ or _iconRightStyle_.                                                                           | Any  |
-| **`iconLeftStyle`**  | Style for left icon. It will override all of the other styles applied to icons.                                                                                                         | Any  |
-| **`iconRightStyle`** | Style for right icon. It will override all of the other styles applied to icons.                                                                                                        | Any  |
-| **`iconStyle`**      | Style for the container of icons. (Example usage is to add `flex` property to it so in the portrait mode, it will shrink the dates strip)                                               | Any  |
-| **`leftSelector`**   | Component for the left selector control. May be an instance of any React component. This overrides the icon\* props above. Passing in an empty array `[]` hides this control.           | Any  |
-| **`rightSelector`**  | Component for the right selector control. May be an instance of any React component. This overrides the icon\* props above. Passing in an empty array `[]` hides this control.          | Any  |
-
-#### Custom Day component
-
-| Prop                 | Description                                                                                                                                                                             | Type | Default |
-| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | ------- |
-| **`dayComponent`**       | User-defined component for the Days. All day-related props are passed to the custom component: https://github.com/BugiDev/react-native-calendar-strip/blob/master/src/CalendarStrip.js#L542 | Any  |
-
 
 #### customDatesStyles
 
-  <div align="center">
+<div align="center">
   <img src="https://cloud.githubusercontent.com/assets/6295083/25105759/a3335fc8-238b-11e7-9a92-3174498a0d89.png" alt="Custom date styling example">
 </div>
 
-| Prop                     | Description                                                                        | Type | optional    |
+This prop may be passed an array of style objects or a callback which receives a date param and returns a style object for it.  The format for the style object follows:
+
+| Key                      | Description                                                                        | Type | optional    |
 | ------------------------ | ---------------------------------------------------------------------------------- | ---- | ----------- |
-| **`startDate`**          | anything parseable by Moment.                                                      | Any  | **`False`** |
-| **`endDate`**            | specify a range. If no endDate is supplied, startDate is treated as a single date. | Any  | **`True`**  |
-| **`dateNameStyle`**      | Style for the name of the day on work days in dates strip                          | Any  | **`True`**  |
-| **`dateNumberStyle`**    | Style for the number of the day on work days in dates strip.                       | Any  | **`True`**  |
+| **`startDate`**          | anything parseable by Moment.                                                      | Any  | **`False`** (unused w/ callback)|
+| **`endDate`**            | specify a range. If no endDate is supplied, startDate is treated as a single date. | Any  | **`True`** (unused w/ callback) |
+| **`dateNameStyle`**      | Text style for the name of the day.                                                | Any  | **`True`**  |
+| **`dateNumberStyle`**    | Text style for the number of the day.                                              | Any  | **`True`**  |
 | **`dateContainerStyle`** | Style for the date Container.                                                      | Any  | **`True`**  |
 
-##### Usage Example:
+##### Array Usage Example:
 
 <details>
 
@@ -317,8 +372,74 @@ Methods may be accessed through the instantiated component's [ref](https://react
     );
   }
 ```
-
 </details>
+
+##### Callback Usage Example:
+
+<details>
+
+```jsx
+  const customDatesStylesFunc = date => {
+    if (date.isoWeekday() === 5) { // Fridays
+      return {
+        dateNameStyle: {color: 'blue'},
+        dateNumberStyle: {color: 'purple'},
+        dateContainerStyle:  {color: 'yellow'},
+      }
+    }
+  }
+
+  render() {
+    return (
+      <CalendarStrip
+        customDatesStyles={customDatesStylesFunc}
+        ...
+      />
+    );
+  }
+```
+</details>
+
+
+#### Responsive Sizing
+
+| Prop                         | Description                                                                                                                                          | Type   | Default  |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | -------- |
+| **`maxDayComponentSize`**    | Maximum size that CalendarDay will responsively size up to.                                                                                          | Number | **`80`** |
+| **`minDayComponentSize`**    | Minimum size that CalendarDay will responsively size down to.                                                                                        | Number | **`10`** |
+| **`responsiveSizingOffset`** | Adjust the responsive sizing. May be positive (increase size) or negative (decrease size). This value is added to the calculated day component width | Number | **`0`**  |
+
+#### Icon Sizing
+
+| Prop                 | Description                                                                                                                                                                             | Type | Default |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | ------- |
+| **`iconLeft`**       | Icon to be used for the left icon. It accepts require statement with url to the image (`require('./img/icon.png')`), or object with remote uri `{uri: 'http://example.com/image.png'}`  | Any  |
+| **`iconRight`**      | Icon to be used for the right icon. It accepts require statement with url to the image (`require('./img/icon.png')`), or object with remote uri `{uri: 'http://example.com/image.png'}` | Any  |
+| **`iconStyle`**      | Style that is applied to both left and right icons. It is applied before _iconLeftStyle_ or _iconRightStyle_.                                                                           | Any  |
+| **`iconLeftStyle`**  | Style for left icon. It will override all of the other styles applied to icons.                                                                                                         | Any  |
+| **`iconRightStyle`** | Style for right icon. It will override all of the other styles applied to icons.                                                                                                        | Any  |
+| **`iconContainer`**  | Style for the container of icons. (Example usage is to add `flex` property to it so in the portrait mode, it will shrink the dates strip)                                               | Any  |
+| **`leftSelector`**   | Component for the left selector control. May be an instance of any React component. This overrides the icon\* props above. Passing in an empty array `[]` hides this control.           | Any  |
+| **`rightSelector`**  | Component for the right selector control. May be an instance of any React component. This overrides the icon\* props above. Passing in an empty array `[]` hides this control.          | Any  |
+
+#### Custom Day component
+
+| Prop                 | Description                                                                                                                                                                             | Type | Default |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | ------- |
+| **`dayComponent`**       | User-defined component for the Days. All day-related props are passed to the custom component: https://github.com/BugiDev/react-native-calendar-strip/blob/master/src/CalendarStrip.js#L542 | Any  |
+
+### Methods
+
+Methods may be accessed through the instantiated component's [ref](https://reactjs.org/docs/react-component.html).
+
+| Prop                                  | Description                                                                                                                                                                                                                                                                                           |
+| ------------------------------------- | --------------------------------------------------------------------------------- |
+| **`getSelectedDate()`**               | Returns the currently selected date. If no date is selected, returns undefined.   |
+| **`setSelectedDate(date)`**           | Sets the selected date. `date` may be a Moment object, ISO8601 date string, or any format that Moment is able to parse. It is the responsibility of the caller to select a date that makes sense (e.g. within the current week view). Passing in a value of `0` effectively clears the selected date. |
+| **`getNextWeek()`**                   | Advance to the next week.                                                         |
+| **`getPreviousWeek()`**               | Rewind to the previous week.                                                      |
+| **`updateWeekView(date)`**            | Show the week starting on `date`.                                                 |
+
 
 ## Animations
 
@@ -326,22 +447,27 @@ Methods may be accessed through the instantiated component's [ref](https://react
 
 | Sequence example (dates shown one by one)                                                                                                                                  | Parallel example (dates shown all at once)                                                                                                                                |
 | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ![alt text](https://raw.githubusercontent.com/BugiDev/react-native-calendar-strip/master/example/gifs/squential.gif "react-native-calendar-strip parallel animation demo") | ![alt text](https://raw.githubusercontent.com/BugiDev/react-native-calendar-strip/master/example/gifs/parallel.gif "react-native-calendar-strip parallel animation demo") |
+| ![alt text](https://user-images.githubusercontent.com/6295083/81627798-96237280-93c4-11ea-998f-53f7ee07caba.gif "react-native-calendar-strip parallel animation demo") | ![alt text](https://user-images.githubusercontent.com/6295083/81627797-96237280-93c4-11ea-874d-1f23fe6ba487.gif "react-native-calendar-strip parallel animation demo") |
 
 #### Week Strip Animation Options
+
+The `calendarAnimation` prop accepts an object in the following format:
 
 | Props          | Description                                         | Types                    |
 | -------------- | --------------------------------------------------- | ------------------------ |
 | **`Type`**     | Pick which type of animation you would like to show | `sequence` or `parallel` |
 | **`duration`** | duration of animation in milliseconds               | Number (ms)              |
+| **`useNativeDriver`** | Use Animated's native driver (default true)  | Bool                     |
 
 ### Day Selection Animation
 
 | Border example                                                                                                                                                              | Background example                                                                                                                                                    |
 | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ![alt text](https://raw.githubusercontent.com/BugiDev/react-native-calendar-strip/master/example/gifs/border-small.gif "react-native-calendar-strip border animation demo") | ![alt text](https://raw.githubusercontent.com/BugiDev/react-native-calendar-strip/master/example/gifs/background-small.gif "react-native-calendar-strip simple demo") |
+| ![alt text](https://user-images.githubusercontent.com/6295083/81627793-94f24580-93c4-11ea-9726-89a56b2c4d49.gif "react-native-calendar-strip border animation demo") | ![alt text](https://user-images.githubusercontent.com/6295083/81627791-93c11880-93c4-11ea-8a1b-e5fb5848d2a7.gif "react-native-calendar-strip simple demo") |
 
 #### Day Selection Animation Options
+
+The `daySelectionAnimation` prop accepts an object in the following format:
 
 | Props                      | Description                                                                                                            | Type                     |
 | -------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ------------------------ |
@@ -463,15 +589,24 @@ const locale = {
 </details>
 </br>
 
-## Contributors
+## Device Specific Notes
 
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- prettier-ignore -->
-| [<img src="https://avatars0.githubusercontent.com/u/4005545?v=4" width="100px;"/><br /><sub><b>Bogdan Begovic</b></sub>](https://github.com/BugiDev)<br />[💬](#question-BugiDev "Answering Questions") [💻](https://github.com/bugidev/react-native-calendar-strip/commits?author=BugiDev "Code") [🎨](#design-BugiDev "Design") [📖](https://github.com/bugidev/react-native-calendar-strip/commits?author=BugiDev "Documentation") [💡](#example-BugiDev "Examples") [🔧](#tool-BugiDev "Tools") | [<img src="https://avatars3.githubusercontent.com/u/6295083?v=4" width="100px;"/><br /><sub><b>Peace</b></sub>](https://github.com/peacechen)<br />[💬](#question-peacechen "Answering Questions") [🐛](https://github.com/bugidev/react-native-calendar-strip/issues?q=author%3Apeacechen "Bug reports") [💻](https://github.com/bugidev/react-native-calendar-strip/commits?author=peacechen "Code") [📖](https://github.com/bugidev/react-native-calendar-strip/commits?author=peacechen "Documentation") [👀](#review-peacechen "Reviewed Pull Requests") | [<img src="https://avatars1.githubusercontent.com/u/15834048?v=4" width="100px;"/><br /><sub><b>Chris Burns</b></sub>](http://www.usebillo.com)<br />[💬](#question-Burnsy "Answering Questions") [🐛](https://github.com/bugidev/react-native-calendar-strip/issues?q=author%3ABurnsy "Bug reports") [💻](https://github.com/bugidev/react-native-calendar-strip/commits?author=Burnsy "Code") [📖](https://github.com/bugidev/react-native-calendar-strip/commits?author=Burnsy "Documentation") [🔧](#tool-Burnsy "Tools") [💡](#example-Burnsy "Examples") [👀](#review-Burnsy "Reviewed Pull Requests") | [<img src="https://avatars0.githubusercontent.com/u/26348965?v=4" width="100px;"/><br /><sub><b>samcolby</b></sub>](https://github.com/samcolby)<br />[💻](https://github.com/bugidev/react-native-calendar-strip/commits?author=samcolby "Code") [⚠️](https://github.com/bugidev/react-native-calendar-strip/commits?author=samcolby "Tests") | [<img src="https://avatars0.githubusercontent.com/u/239360?v=4" width="100px;"/><br /><sub><b>Florian Biebel</b></sub>](https://chromosom23.de)<br />[💻](https://github.com/bugidev/react-native-calendar-strip/commits?author=1ne8ight7even "Code") | [<img src="https://avatars0.githubusercontent.com/u/986135?v=4" width="100px;"/><br /><sub><b>Vitaliy Zhukov</b></sub>](http://intspirit.com/)<br />[💻](https://github.com/bugidev/react-native-calendar-strip/commits?author=Vitall "Code") | [<img src="https://avatars1.githubusercontent.com/u/15323137?v=4" width="100px;"/><br /><sub><b>lbrdar</b></sub>](https://github.com/lbrdar)<br />[💻](https://github.com/bugidev/react-native-calendar-strip/commits?author=lbrdar "Code") |
-| :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [<img src="https://avatars0.githubusercontent.com/u/6774813?v=4" width="100px;"/><br /><sub><b>Dimka Vasilyev</b></sub>](https://github.com/gHashTag)<br />[💻](https://github.com/bugidev/react-native-calendar-strip/commits?author=gHashTag "Code") | [<img src="https://avatars2.githubusercontent.com/u/6241354?v=4" width="100px;"/><br /><sub><b>Eugene</b></sub>](https://github.com/hellpirat)<br />[💻](https://github.com/bugidev/react-native-calendar-strip/commits?author=hellpirat "Code") |
-<!-- ALL-CONTRIBUTORS-LIST:END -->
-Thanks goes to these wonderful people ([emoji key](https://github.com/kentcdodds/all-contributors#emoji-key)):
+<ul>
+<li>OnePlus devices use OnePlus Slate font by default which causes text being cut off in the date number in react-native-calendar-strip. To overcome this change the default font of the device or use a specific font throughout your app.</li>
+</ul>
+
+## Development with Sample Application
+
+To facilitate development, the `example` directory has a sample app.
+
+```sh
+cd example
+npm run cp
+npm install
+npm start
+```
+
+The CalendarStrip source files are copied from the project root directory into `example/CalendarStrip` using `npm run cp`.  If a source file is modified, it must be copied over again with `npm run cp`.
 
 ## Contributing
 
@@ -484,6 +619,17 @@ Contributions are welcome!
 5. Submit a pull request :D
 
 Or open up [an issue](https://github.com/BugiDev/react-native-calendar-strip/issues).
+
+
+## Contributors
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+
+| [<img src="https://avatars0.githubusercontent.com/u/4005545?v=4" width="100px;"/><br /><sub><b>Bogdan Begovic</b></sub>](https://github.com/BugiDev)<br />[💬](#question-BugiDev "Answering Questions") [💻](https://github.com/bugidev/react-native-calendar-strip/commits?author=BugiDev "Code") [🎨](#design-BugiDev "Design") [📖](https://github.com/bugidev/react-native-calendar-strip/commits?author=BugiDev "Documentation") [💡](#example-BugiDev "Examples") [🔧](#tool-BugiDev "Tools") | [<img src="https://avatars3.githubusercontent.com/u/6295083?v=4" width="100px;"/><br /><sub><b>Peace</b></sub>](https://github.com/peacechen)<br />[💬](#question-peacechen "Answering Questions") [🐛](https://github.com/bugidev/react-native-calendar-strip/issues?q=author%3Apeacechen "Bug reports") [💻](https://github.com/bugidev/react-native-calendar-strip/commits?author=peacechen "Code") [📖](https://github.com/bugidev/react-native-calendar-strip/commits?author=peacechen "Documentation") [👀](#review-peacechen "Reviewed Pull Requests") | [<img src="https://avatars1.githubusercontent.com/u/15834048?v=4" width="100px;"/><br /><sub><b>Chris Burns</b></sub>](http://www.usebillo.com)<br />[💬](#question-Burnsy "Answering Questions") [🐛](https://github.com/bugidev/react-native-calendar-strip/issues?q=author%3ABurnsy "Bug reports") [💻](https://github.com/bugidev/react-native-calendar-strip/commits?author=Burnsy "Code") [📖](https://github.com/bugidev/react-native-calendar-strip/commits?author=Burnsy "Documentation") [🔧](#tool-Burnsy "Tools") [💡](#example-Burnsy "Examples") [👀](#review-Burnsy "Reviewed Pull Requests") | [<img src="https://avatars0.githubusercontent.com/u/26348965?v=4" width="100px;"/><br /><sub><b>samcolby</b></sub>](https://github.com/samcolby)<br />[💻](https://github.com/bugidev/react-native-calendar-strip/commits?author=samcolby "Code") [⚠️](https://github.com/bugidev/react-native-calendar-strip/commits?author=samcolby "Tests") | [<img src="https://avatars0.githubusercontent.com/u/239360?v=4" width="100px;"/><br /><sub><b>Florian Biebel</b></sub>](https://chromosom23.de)<br />[💻](https://github.com/bugidev/react-native-calendar-strip/commits?author=1ne8ight7even "Code") | [<img src="https://avatars0.githubusercontent.com/u/986135?v=4" width="100px;"/><br /><sub><b>Vitaliy Zhukov</b></sub>](http://intspirit.com/)<br />[💻](https://github.com/bugidev/react-native-calendar-strip/commits?author=Vitall "Code") | [<img src="https://avatars1.githubusercontent.com/u/15323137?v=4" width="100px;"/><br /><sub><b>lbrdar</b></sub>](https://github.com/lbrdar)<br />[💻](https://github.com/bugidev/react-native-calendar-strip/commits?author=lbrdar "Code") |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| [<img src="https://avatars0.githubusercontent.com/u/6774813?v=4" width="100px;"/><br /><sub><b>Dimka Vasilyev</b></sub>](https://github.com/gHashTag)<br />[💻](https://github.com/bugidev/react-native-calendar-strip/commits?author=gHashTag "Code") | [<img src="https://avatars2.githubusercontent.com/u/6241354?v=4" width="100px;"/><br /><sub><b>Eugene</b></sub>](https://github.com/hellpirat)<br />[💻](https://github.com/bugidev/react-native-calendar-strip/commits?author=hellpirat "Code") |
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+Thanks goes to these wonderful people ([emoji key](https://github.com/kentcdodds/all-contributors#emoji-key)):
 
 ## Discussion and Collaboration
 
