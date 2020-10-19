@@ -7,32 +7,32 @@ import { StyleSheet } from "react-native";
 export default StyleSheet.create({
   //CALENDAR STYLES
   calendarContainer: {
-    overflow: "hidden"
+    overflow: "hidden",
   },
   datesStrip: {
     flexDirection: "row",
     flex: 1,
     alignItems: "center",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
   },
   calendarDates: {
     flex: 1,
     flexDirection: "row",
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
   },
   calendarHeader: {
     textAlign: "center",
     fontWeight: "bold",
-    alignSelf: "center"
+    alignSelf: "center",
   },
   iconContainer: {
     justifyContent: "center",
     alignItems: "center",
-    alignSelf: "center"
+    alignSelf: "center",
   },
   icon: {
-    resizeMode: "contain"
+    resizeMode: "contain",
   },
 
   //CALENDAR DAY
@@ -40,44 +40,43 @@ export default StyleSheet.create({
     flex: 1,
   },
   dateContainer: {
-    justifyContent: "center",
     alignItems: "center",
-    alignSelf: "center"
+    alignSelf: "center",
   },
   dateName: {
-    textAlign: "center"
+    textAlign: "center",
   },
   weekendDateName: {
     color: "#A7A7A7",
-    textAlign: "center"
+    textAlign: "center",
   },
   dateNumber: {
     fontWeight: "bold",
-    textAlign: "center"
+    textAlign: "center",
   },
   weekendDateNumber: {
     color: "#A7A7A7",
     fontWeight: "bold",
-    textAlign: "center"
+    textAlign: "center",
   },
   dot: {
     width: 6,
     height: 6,
     marginTop: 1,
     borderRadius: 5,
-    opacity: 0
+    opacity: 0,
   },
 
   // CALENDAR DOTS
   dotsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center'
+    flexDirection: "row",
+    justifyContent: "center",
   },
   visibleDot: {
     opacity: 1,
-    backgroundColor: 'blue'
+    backgroundColor: "blue",
   },
   selectedDot: {
-    backgroundColor: 'blue'
+    backgroundColor: "blue",
   },
 });

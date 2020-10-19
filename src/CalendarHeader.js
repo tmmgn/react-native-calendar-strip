@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Text, View } from "react-native";
+import { isEqual } from "lodash";
 
 import styles from "./Calendar.style.js";
 
@@ -9,11 +10,11 @@ class CalendarHeader extends Component {
     calendarHeaderFormat: PropTypes.string.isRequired,
     calendarHeaderContainerStyle: PropTypes.oneOfType([
       PropTypes.object,
-      PropTypes.number
+      PropTypes.number,
     ]),
     calendarHeaderStyle: PropTypes.oneOfType([
       PropTypes.object,
-      PropTypes.number
+      PropTypes.number,
     ]),
     weekStartDate: PropTypes.object,
     weekEndDate: PropTypes.object,
@@ -22,7 +23,7 @@ class CalendarHeader extends Component {
   };
 
   shouldComponentUpdate(nextProps) {
-    return JSON.stringify(this.props) !== JSON.stringify(nextProps);
+    return !isEqual(this.props, nextProps);
   }
 
   //Function that formats the calendar header
@@ -66,19 +67,23 @@ class CalendarHeader extends Component {
   }
 
   render() {
-    const headerText = this.formatCalendarHeader(this.props.calendarHeaderFormat);
+    const headerText = this.formatCalendarHeader(
+      this.props.calendarHeaderFormat
+    );
     return (
       <View style={this.props.calendarHeaderContainerStyle}>
+        {this.props.weekSelectorPrev}
         <Text
           style={[
             styles.calendarHeader,
             { fontSize: this.props.fontSize },
-            this.props.calendarHeaderStyle
+            this.props.calendarHeaderStyle,
           ]}
           allowFontScaling={this.props.allowHeaderTextScaling}
         >
           {headerText}
         </Text>
+        {this.props.weekSelectorNext}
       </View>
     );
   }
